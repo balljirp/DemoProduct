@@ -53,15 +53,9 @@ app.controller("demoController", function ($scope, $http) {
 
     $scope.checkOut = function (data) {
         console.log("data: ", data);
-        items = [{
-            "category" : "men's clothing",
-            "count": 1,
-            "description": "Your perfect pack for everyday use and walks in the forest. Stash your laptop (up to 15 inches) in the padded sleeve, your everyday",
-            "id": 1,
-            "image": "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg",
-            "price": 109.95
-        }]
-        return $http.post("http://localhost:8080/products", items).then(
+        console.log("data.rating: ", data[0].rating);
+        console.log("data.rating.count: ", data[0].rating.count);
+        return $http.post("http://localhost:8080/products", data).then(
             function successCallback(response) {
                 console.log("success: ", response);
             }, function errorCallback(response) {

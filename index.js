@@ -5,6 +5,17 @@ const bodyParser = require('body-parser');
 const port = process.env.PORT || 8080;
 const cors = require('cors');
 
+let prod_list = [{
+    id: null,
+    title: null,
+    price: null,
+    description: null,
+    category: null,
+    image: null,
+    rating: { rate: null, count: null },
+    count: null
+}];
+
 const db = new sqlite3.Database("./products.db", sqlite3.OPEN_READWRITE, (err) => {
     if (err) return console.log(err.message);
 
@@ -19,8 +30,8 @@ const db = new sqlite3.Database("./products.db", sqlite3.OPEN_READWRITE, (err) =
 //             category TEXT NOT NULL,
 //             description TEXT NOT NULL,
 //             image TEXT NOT NULL,
-//             piece INTEGER NOT NULL,
-//             count INTEGER NOT NULL
+//             count INTEGER NOT NULL,
+//             num INTEGER NOT NULL
 //         )`
 // );
 
@@ -32,22 +43,17 @@ app.use(bodyParser.json());
 app.use(cors());
 
 app.post('/products', (req, res) => {
-    console.log(req.body);
-    // const { body } = req;
-    // const { firstname } = body;
-    // const { lastname } = body;
-    // const { username } = body;
-    // const { email } = body;
-    // const { password } = body;
+    prod_list = req.body;
+    prod_list.forEach(product => {
+        const sql = `INSERT INTO products(title, price, category, description, image, count, num)
+                        VALUES(?, ?, ?, ?, ?, ?, ?)`;
 
-    // const sql = `INSERT INTO users(first_name, last_name, username, password, email)
-    //                     VALUES(?, ?, ?, ?, ?)`;
+        db.run(sql, [product.title, product.price, product.category, product.description, product.image, product.rating.count, product.count], (err) => {
+            if (err) return err.message;
 
-    // db.run(sql, [firstname, lastname, username, password, email], (err) => {
-    //     if (err) return err.message;
-
-    //     console.log("A new row has been created");
-    // });
+            console.log("A new row has been created");
+        });
+    });
 
     db.close((err) => {
         if (err) return console.log(err.message);
@@ -55,12 +61,6 @@ app.post('/products', (req, res) => {
         console.log("connection closed");
     });
 });
-
-// db.close((err) => {
-//     if (err) return console.log(err.message);
-
-//     console.log("connection closed");
-// });
 
 app.listen(port, () => {
     console.log("Starting node.js at port " + port);
